@@ -44,9 +44,9 @@ def detect_powermate():
 
 def set_led(powermate, enable):
     if enable:
-        powermate.set_steady_led(0)
-    else:
         powermate.set_steady_led(200)
+    else:
+        powermate.set_steady_led(0)
 
 if __name__ == '__main__':
     p = detect_powermate()

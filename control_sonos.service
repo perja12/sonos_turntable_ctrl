@@ -1,0 +1,16 @@
+[Unit]
+Description=Sonos Turntable Control
+
+[Service]
+WorkingDirectory=/home/pi/sonos_turntable_ctrl
+ExecStart=pipenv run python control_sonos.py
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=sonos_ctrl
+User=pi
+Group=pi
+
+[Install]
+WantedBy=multi-user.target

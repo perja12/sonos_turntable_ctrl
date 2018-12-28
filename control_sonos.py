@@ -1,18 +1,17 @@
-#!/usr/bin/env python
-
 import glob
-import soco
 import sys
-import time
+import soco
 
 from pypowermate import Powermate
-from soco import SoCo
+
+SONOS_PLAYBAR_NAME = "Stue/TV"
+SONOS_CONNECT_AMP_NAME = "Platespiller"
 
 POWERMATE_MAX = 800
 DEFAULT_TV_VOLUME = 10
 
-def mapFromTo(x,a,b,c,d):
-    y=(x-a)/(b-a)*(d-c)+c
+def mapFromTo(x, a, b, c, d):
+    y = (x - a) / (b - a)* (d - c) + c
     return int(y)
 
 
@@ -49,8 +48,8 @@ if __name__ == '__main__':
         sys.stderr.write('error: no powermate found\n')
         sys.exit(1)
 
-    sonos_tv = findDeviceByName('Stue/TV')
-    sonos_turntable = findDeviceByName('Platespiller')
+    sonos_tv = findDeviceByName(SONOS_PLAYBAR_NAME)
+    sonos_turntable = findDeviceByName(SONOS_CONNECT_AMP_NAME)
 
     if not sonos_tv or not sonos_turntable:
         sys.stderr.write('error: no sonos devices found\n')
@@ -62,25 +61,24 @@ if __name__ == '__main__':
     play_turntable = sonos_tv.is_playing_line_in
 
     while True:
-            (ts, evt, val) = p.read_event()
-            if evt == Powermate.EVENT_BUTTON:
-                    if val == Powermate.BUTTON_UP:
-                            play_turntable = not play_turntable
+        (ts, evt, val) = p.read_event()
+        if evt == Powermate.EVENT_BUTTON:
+            if val == Powermate.BUTTON_UP:
+                play_turntable = not play_turntable
+                if play_turntable:
+                    current_track = sonos_tv.get_current_track_info()
+                    sonos_tv.switch_to_line_in(source=sonos_turntable)
+                    sonos_tv.play()
+                else:
+                    cur_vol = set_volume(DEFAULT_TV_VOLUME, cur_vol, sonos_tv)
+                    speed = mapVolumeToSpeed(DEFAULT_TV_VOLUME)
 
-                            if play_turntable:
-                                    current_track = sonos_tv.get_current_track_info()
-                                    sonos_tv.switch_to_line_in(source=sonos_turntable)
-                                    sonos_tv.play()
-                            else:
-                                    cur_vol = set_volume(DEFAULT_TV_VOLUME, cur_vol, sonos_tv)
-                                    speed = mapVolumeToSpeed(DEFAULT_TV_VOLUME)
+                    sonos_tv.play_uri(uri=current_track['uri'])
+                    if sonos_tv.is_playing_line_in:
+                        sonos_tv.switch_to_tv()
 
-                                    sonos_tv.play_uri(uri=current_track['uri'])
-                                    if sonos_tv.is_playing_line_in:
-                                            sonos_tv.switch_to_tv()
-
-            elif evt == p.EVENT_ROTATE:
-                    speed += val
-                    speed = min(max(speed, 0), POWERMATE_MAX)
-                    vol = mapFromTo(speed, 0, POWERMATE_MAX, 0, 100)
-                    cur_vol = set_volume(vol, cur_vol, sonos_tv)
+        elif evt == p.EVENT_ROTATE:
+            speed += val
+            speed = min(max(speed, 0), POWERMATE_MAX)
+            vol = mapFromTo(speed, 0, POWERMATE_MAX, 0, 100)
+            cur_vol = set_volume(vol, cur_vol, sonos_tv)

@@ -69,6 +69,7 @@ if __name__ == '__main__':
                     current_track = sonos_tv.get_current_track_info()
                     sonos_tv.switch_to_line_in(source=sonos_turntable)
                     sonos_tv.play()
+                    p.set_steady_led(200)
                 else:
                     cur_vol = set_volume(DEFAULT_TV_VOLUME, cur_vol, sonos_tv)
                     speed = mapVolumeToSpeed(DEFAULT_TV_VOLUME)
@@ -76,6 +77,7 @@ if __name__ == '__main__':
                     sonos_tv.play_uri(uri=current_track['uri'])
                     if sonos_tv.is_playing_line_in:
                         sonos_tv.switch_to_tv()
+                    p.set_steady_led(0)
 
         elif evt == p.EVENT_ROTATE:
             speed += val

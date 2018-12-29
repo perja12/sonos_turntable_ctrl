@@ -27,6 +27,6 @@ Run it directly with `pipenv run python control_sonos.py`
 You may want to enable systemd service for this script as it automatically restarts the scripts when rebooting.
 
 * Install with `sudo cp sonos_turntable_ctrl.service /etc/systemd/system/`
+* Enable service to run at boot: `sudo systemctl enable sonos_turntable_ctrl`
 * Start the service: `sudo systemctl start sonos_turntable_ctrl`
 * Check the logs: `sudo journalctl -u sonos_turntable_ctrl`
-

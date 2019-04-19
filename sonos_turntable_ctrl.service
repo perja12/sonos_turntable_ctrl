@@ -1,5 +1,6 @@
 [Unit]
 Description=Sonos Turntable Control
+RestartSec=60
 
 [Service]
 WorkingDirectory=/home/pi/sonos_turntable_ctrl
